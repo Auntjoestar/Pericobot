@@ -67,6 +67,27 @@ async def noCoito(ctx):
     else:
         await ctx.send('Debes estar en un canal de voz, bobita!')
 
+@bot.command()
+async def dlst(ctx, user: discord.Member):
+    if ctx.author.voice:
+        channel = ctx.author.voice.channel
+        voiceClient = await channel.connect()
+        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+        SOUND = os.path.join(BASE_DIR, 'daleLoquitaSosTuani.opus')
+
+        if os.path.exists(SOUND):
+            user = user.mention
+            thread = threading.Thread(target=send_message, args=(ctx, f'Dale {user}, sos tuani'))
+            thread.start()
+            voiceClient.play(discord.FFmpegPCMAudio(SOUND))
+            voiceClient.source = discord.PCMVolumeTransformer(voiceClient.source)
+            voiceClient.source.volume = 0.5
+            while voiceClient.is_playing():
+                await asyncio.sleep(1)
+            await voiceClient.disconnect()
+    else:
+        await ctx.send('Debes estar en un canal de voz, bobita!')
+
 # Run the bot
 bot.run(TOKEN)
 
