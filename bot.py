@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from random import choice
+from random import choice, randint
 import os
 import asyncio
 import threading
@@ -14,6 +14,11 @@ intents.message_content = True  # Enable reading message content
 intents.members = True  # Enable access to members
 intents.voice_states = True  # Enable access to voice state updates
 bot = commands.Bot(command_prefix='!', intents=intents)
+
+def shuffle(arr):
+    for i in range(len(arr) - 1, 0, -1):
+        j = randint(0, i)
+        arr[i], arr[j] = arr[j], arr[i]
 
 def send_message(ctx, message):
     asyncio.run_coroutine_threadsafe(ctx.send(message), bot.loop)
@@ -30,10 +35,12 @@ async def retador(ctx):
     if channel:
         members = channel.members
         if len(members) >= 2:
+            shuffle(members)
             retador = choice(members)
             retado = choice([member for member in members if member != retador])
-            
-            response = f"El retador es {retador.display_name}\nEl retado es {retado.display_name}"
+            retador = retador.mention
+            retado = retado.mention
+            response = f"El retador es {retador}\nEl retado es {retado}"
             await ctx.send(response)
         else:
             await ctx.send('No hay suficientes miembros en el canal de voz.')
